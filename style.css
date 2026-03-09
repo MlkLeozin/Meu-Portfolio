@@ -266,12 +266,12 @@ header.sticky {
     display: none;
     width: 40px; height: 40px;
     cursor: pointer;
-    background: url('/img/menu.png') center/25px no-repeat;
+    background: url('menu.png') center/25px no-repeat;
     filter: invert(1);
     z-index: 1000;
 }
 
-.menu-btn.active { background: url('/img/close.png') center/20px no-repeat; }
+.menu-btn.active { background: url('close.png') center/20px no-repeat; }
 
 /* ===== HERO ===== */
 .hero {
@@ -286,7 +286,7 @@ header.sticky {
 .hero-bg {
     position: absolute;
     inset: 0;
-    background-image: url('/img/bg.jpg');
+    background-image: url('bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -741,4 +741,5 @@ footer {
 @media (max-width: 500px) {
     .about-stats { grid-template-columns: 1fr 1fr; }
 }
+
 
