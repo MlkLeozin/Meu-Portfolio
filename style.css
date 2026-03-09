@@ -741,5 +741,3 @@ footer {
 @media (max-width: 500px) {
     .about-stats { grid-template-columns: 1fr 1fr; }
 }
-
-
