@@ -348,33 +348,6 @@
 <script>AOS.init({ offset: 0, once: true });</script>
 <script src="/js/main.js"></script>
 
-<script>
-// MAP MODAL JS
-function openMap() {
-    var modal = document.getElementById('mapModal');
-    var iframe = document.getElementById('mapIframe');
-    if (!iframe.getAttribute('data-loaded')) {
-        iframe.src = 'https://maps.google.com/maps?q=Murrapaniua,Nampula,Mozambique&z=14&output=embed';
-        iframe.setAttribute('data-loaded', 'true');
-    }
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMap() {
-    document.getElementById('mapModal').style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-document.getElementById('mapModal').addEventListener('click', function(e) {
-    if (e.target === this) closeMap();
-});
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeMap();
-});
-</script>
-
 </body>
 
 </html>
