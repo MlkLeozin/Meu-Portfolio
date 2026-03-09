@@ -312,7 +312,7 @@
         <div class="contact-info-cards" data-aos="fade-right" data-aos-duration="1000">
             <div class="contact-card">
                 <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
-                <div><h4>Endereço</h4><p>Murrapaniua-1, Nampula, Moçambique</p></div>
+                <div><h4>Endereço</h4><p style="cursor:pointer;color:var(--red);" onclick="openMap()">Murrapaniua-1, Nampula, Moçambique <i class="fas fa-map-marker-alt" style="font-size:0.75rem"></i></p></div>
             </div>
             
             <div class="contact-card">
@@ -321,7 +321,7 @@
             </div>
             <div class="contact-card">
                 <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
-                <div><h4>Email</h4><a href="mailto:leonelnelson07@email.com">leonelnelson07@email.com</a></div>
+                <div><h4>Email</h4><a href="mailto:leonelnelson07@gmail.com">leonelnelson07@gmail.com</a></div>
             </div>
             <div class="contact-card">
                 <div class="contact-card-icon"><i class="fas fa-globe"></i></div>
@@ -329,10 +329,11 @@
             </div>
         </div>
         <div class="contact-form" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-            <div class="form-group"><input type="text" placeholder="Nome"></div>
-            <div class="form-group"><input type="email" placeholder="Email"></div>
-            <div class="form-group"><textarea placeholder="Mensagem"></textarea></div>
-            <button class="submit-btn">Enviar Mensagem</button>
+            <div class="form-group"><input type="text" id="contactName" placeholder="Nome"></div>
+            <div class="form-group"><input type="email" id="contactEmail" placeholder="Email"></div>
+            <div class="form-group"><textarea id="contactMessage" placeholder="Mensagem"></textarea></div>
+            <button class="submit-btn" id="submitBtn" onclick="enviarContato()">Enviar Mensagem</button>
+            <div id="formStatus" style="margin-top:12px;font-size:0.85rem;text-align:center;display:none;"></div>
         </div>
     </div>
 </section>
@@ -346,9 +347,106 @@
 <!-- ===== SCRIPTS ===== -->
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script>AOS.init({ offset: 0, once: true });</script>
-<script src="/js/main.js"></script>
 
-</body>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+// ══════════════════════════════════════
+//  EMAILJS — Formulário de Contacto
+//  Para activar:
+//  1. Vai a https://emailjs.com e cria conta gratuita
+//  2. Cria um Email Service (Gmail) → copia Service ID
+//  3. Cria um Email Template com variáveis:
+//     {{from_name}}, {{from_email}}, {{message}}
+//  4. Copia Public Key em Account → API Keys
+//  5. Substitui os 3 valores abaixo
+// ══════════════════════════════════════
+const EJS_PUBLIC_KEY  = "COLOCA_A_TUA_PUBLIC_KEY";
+const EJS_SERVICE_ID  = "COLOCA_O_SERVICE_ID";
+const EJS_TEMPLATE_ID = "COLOCA_O_TEMPLATE_ID";
 
-</html>
+(function(){ emailjs.init(EJS_PUBLIC_KEY); })();
 
+function enviarContato() {
+    const nome     = document.getElementById("contactName").value.trim();
+    const email    = document.getElementById("contactEmail").value.trim();
+    const mensagem = document.getElementById("contactMessage").value.trim();
+    const status   = document.getElementById("formStatus");
+    const btn      = document.getElementById("submitBtn");
+
+    if (!nome || !email || !mensagem) {
+        status.style.display = "block";
+        status.style.color   = "#e74c3c";
+        status.textContent   = "⚠ Preenche todos os campos!";
+        return;
+    }
+
+    // Se ainda não configurou o EmailJS → abre o email directamente
+    if (EJS_PUBLIC_KEY === "COLOCA_A_TUA_PUBLIC_KEY") {
+        const mailto = `mailto:leonelnelson07@gmail.com?subject=Contacto de ${encodeURIComponent(nome)}&body=${encodeURIComponent("Nome: "+nome+"\nEmail: "+email+"\n\n"+mensagem)}`;
+        window.location.href = mailto;
+        return;
+    }
+
+    btn.textContent  = "A enviar...";
+    btn.disabled     = true;
+
+    emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+        from_name:  nome,
+        from_email: email,
+        message:    mensagem,
+        to_email:   "leonelnelson07@gmail.com"
+    }).then(() => {
+        status.style.display = "block";
+        status.style.color   = "#00ff88";
+        status.textContent   = "✅ Mensagem enviada com sucesso!";
+        btn.textContent      = "Enviado ✓";
+        document.getElementById("contactName").value    = "";
+        document.getElementById("contactEmail").value   = "";
+        document.getElementById("contactMessage").value = "";
+    }).catch(err => {
+        status.style.display = "block";
+        status.style.color   = "#e74c3c";
+        status.textContent   = "❌ Erro ao enviar. Tenta novamente.";
+        btn.textContent      = "Enviar Mensagem";
+        btn.disabled         = false;
+        console.error(err);
+    });
+}
+</script>
+
+<!-- MAP MODAL -->
+<div id="mapModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div style="position:relative;width:min(700px,92vw);height:420px;">
+        <button onclick="closeMap()" style="position:absolute;top:-18px;right:-18px;z-index:2;background:var(--red);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        <iframe id="mapIframe" width="100%" height="100%" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>
+    </div>
+    <a href="https://maps.google.com/?q=Murrapaniua,Nampula,Mozambique" target="_blank" style="color:var(--red);font-size:0.8rem;">Abrir no Google Maps →</a>
+</div>
+
+<script src="main.js"></script>
+
+<script>
+function openMap() {
+    var modal  = document.getElementById('mapModal');
+    var iframe = document.getElementById('mapIframe');
+    if (!iframe.getAttribute('data-loaded')) {
+        iframe.src = 'https://maps.google.com/maps?q=Murrapaniua,Nampula,Mozambique&z=14&output=embed';
+        iframe.setAttribute('data-loaded', 'true');
+    }
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeMap() {
+    document.getElementById('mapModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.getElementById('mapModal').addEventListener('click', function(e){
+    if (e.target === this) closeMap();
+});
+document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeMap();
+});
+</script>
+<body>
+<html>
